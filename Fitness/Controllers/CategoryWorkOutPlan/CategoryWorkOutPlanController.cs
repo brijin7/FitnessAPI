@@ -1,0 +1,354 @@
+﻿using Fitness.Models.CommonModels;
+using Fitness.Models.DataAccessLayer.CategoryWorkOutPlan;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.ModelBinding;
+using static Fitness.Models.BusinessObject.CategoryWorkOutPlan.BOL_CategoryWorkOutPlan;
+
+namespace Fitness.Controllers
+{
+    //[Authorize]
+    [RoutePrefix("api/CategoryWorkOutPlan")]
+    public class CategoryWorkoutPlanController : ApiController
+    {
+        readonly DAL_CategoryWorkOutPlan DAL_CategoryDietPlan = new DAL_CategoryWorkOutPlan();
+        /// <summary>
+        /// This Method Used To For Get Category WorkOut Plan Based On branch
+        /// </summary>
+        /// <param name="Input">CategoryWorkOutPlan_In</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("")]
+        public async Task<IHttpActionResult> GetCategoryWorkOutPlanMasterAsync([FromUri] CategoryWorkOutPlan_In Input)
+        {
+            try
+            {
+                string UserFoodMenu = await DAL_CategoryDietPlan.UD_GetCategoryWorkOutPlanAsync(Input);
+                if (!string.IsNullOrEmpty(UserFoodMenu))
+                {
+                    var result = JsonConvert.DeserializeObject(UserFoodMenu);
+                    CategoryWorkOutPlan_Out output = new CategoryWorkOutPlan_Out()
+                    {
+                        StatusCode = 1,
+                        CategoryWorkOutPlan = result
+                    };
+                    return Ok(output);
+                }
+                else
+                {
+                    DB_Response res = new DB_Response()
+                    {
+                        StatusCode = 0,
+                        Response = "No Records Found !!!."
+                    };
+                    return Content(HttpStatusCode.NotFound, res);
+                }
+            }
+            catch (Exception ex)
+            {
+                return GetErrorResponse(ex);
+            }
+        }
+        /// <summary>
+        /// This Method is Used For Get Category Insert In Category WorkOut Plan
+        /// </summary>
+        /// <param name="Input">CategoryWorkOut_In</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getMstrWorkOut")]
+        public async Task<IHttpActionResult> GetWorkOutInsertAsync([FromUri] CategoryWorkOut_In Input)
+        {
+            try
+            {
+                string UserFoodMenu = await DAL_CategoryDietPlan.UD_GetWorkOutMstrAsync(Input);
+                if (!string.IsNullOrEmpty(UserFoodMenu))
+                {
+                    var result = JsonConvert.DeserializeObject(UserFoodMenu);
+                    CategoryWorkOutPlan_Out output = new CategoryWorkOutPlan_Out()
+                    {
+                        StatusCode = 1,
+                        CategoryWorkOutPlan = result
+                    };
+                    return Ok(output);
+                }
+                else
+                {
+                    DB_Response res = new DB_Response()
+                    {
+                        StatusCode = 0,
+                        Response = "No Records Found !!!."
+                    };
+                    return Content(HttpStatusCode.NotFound, res);
+                }
+            }
+            catch (Exception ex)
+            {
+                return GetErrorResponse(ex);
+            }
+        }
+        /// <summary>
+        /// this method is used to get  category  details
+        /// </summary>
+        /// <param name="Input">CategoryWorkOut_In class as input parameter</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("getCategoryWorkOut")]
+        public async Task<IHttpActionResult> GetCatDietPlanAsync([FromUri] CategoryWorkOut_In Input)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return GetModelResponse(Input, ModelState);
+                }
+                JArray Response = await DAL_CategoryDietPlan.UD_GetCategoryAsync(Input);
+
+                return GetSuccessOrFailureResForJArray(Response, "No Records Found !!!.");
+
+            }
+            catch (Exception ex)
+            {
+                return GetErrorResponse(ex);
+            }
+        }
+        /// <summary>
+        /// This Method Used To For Get Category WorkOut Plan Based On branch
+        /// </summary>
+        /// <param name="Input">CategoryWorkOutPlan_In</param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("GetPublicCategoryWorkOutPlan")]
+        public async Task<IHttpActionResult> GetPublicCategoryWorkOutPlanAsync([FromUri] CategoryWorkOutPlan_In Input)
+        {
+            try
+            {
+                string UserFoodMenu = await DAL_CategoryDietPlan.UD_GetPublicCategoryWorkOutPlanAsync(Input);
+                if (!string.IsNullOrEmpty(UserFoodMenu))
+                {
+                    var result = JsonConvert.DeserializeObject(UserFoodMenu);
+                    CategoryWorkOutPlan_Out output = new CategoryWorkOutPlan_Out()
+                    {
+                        StatusCode = 1,
+                        CategoryWorkOutPlan = result
+                    };
+                    return Ok(output);
+                }
+                else
+                {
+                    DB_Response res = new DB_Response()
+                    {
+                        StatusCode = 0,
+                        Response = "No Records Found !!!."
+                    };
+                    return Content(HttpStatusCode.NotFound, res);
+                }
+            }
+            catch (Exception ex)
+            {
+                return GetErrorResponse(ex);
+            }
+        }
+
+        /// <summary>
+        /// this method is used to insert CategoryWorkOutPlan
+        /// </summary>
+        /// <param name="Input">InsertCategoryWorkOutPlan_In class as input parameter</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("insert")]
+        public async Task<IHttpActionResult> InsertCategoryWorkOutPlanAsync([FromBody] InsertCategoryWorkOutPlan_In Input)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return GetModelResponse(Input, ModelState);
+                }
+
+                DB_Response DB_res = await DAL_CategoryDietPlan.UD_InsertCategoryWorkOutPlan(Input);
+
+                return GetDBSuccessOrInfoResponse(DB_res, "Create");
+            }
+            catch (Exception ex)
+            {
+                return GetErrorResponse(ex);
+            }
+        }
+
+
+        /// <summary>
+        /// this method is used to update CategoryWorkOutPlan master
+        /// </summary>
+        /// <param name="Input">UpdateCategoryWorkOutPlan_In class as input parameter</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("update")]
+        public async Task<IHttpActionResult> UpdateCategoryWorkOutPlanAsync([FromBody] UpdateCategoryWorkOutPlan_In Input)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return GetModelResponse(Input, ModelState);
+                }
+
+                DB_Response DB_res = await DAL_CategoryDietPlan.UD_UpdateCategoryWorkOutPlan(Input);
+                return GetDBSuccessOrInfoResponse(DB_res, "");
+            }
+            catch (Exception ex)
+            {
+                return GetErrorResponse(ex);
+            }
+        }
+
+        /// <summary>
+        /// this method is used to check if user entered all the required fields
+        /// </summary>
+        /// <param name="ModelState">model state parameter</param>
+        /// <param name="isValid">boolean isvalid or not</param>
+        /// <param name="API_InfoRes">API response parameter</param>
+        private IHttpActionResult GetModelResponse(dynamic Input, ModelStateDictionary ModelState)
+        {
+            string[] Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToArray();
+            string message = string.Join($" | ", Errors.Where(x => !string.IsNullOrEmpty(x)).ToArray());
+
+            var msg = ModelState.SelectMany(s => s.Value.Errors).Select(e => e.Exception == null ? "" : e.Exception.Message.ToString()).ToArray();
+            string ExceptionMessage = string.Join($" | ", msg.Where(x => !string.IsNullOrEmpty(x)).ToArray());
+
+            API_SuccessOrErrorOrInfo API_InfoRes;
+            if (Input != null)
+            {
+                API_InfoRes = new API_SuccessOrErrorOrInfo()
+                {
+                    StatusCode = 0,
+                    Response = $"{message} {ExceptionMessage}",
+                };
+            }
+            else
+            {
+                API_InfoRes = new API_SuccessOrErrorOrInfo()
+                {
+                    StatusCode = 0,
+                    Response = "Must Pass All Parameters",
+                };
+            }
+            return Content(HttpStatusCode.BadRequest, API_InfoRes);
+        }
+        /// <summary>
+        /// this method is used to get success or no records found response
+        /// </summary>
+        /// <param name="DB_res">DB_Response class as input parameter</param>
+        /// <param name="CUD">CUD Create Update Delete</param>
+        /// <returns></returns>
+        private IHttpActionResult GetDBSuccessOrInfoResponse(DB_Response DB_res, string CUD)
+        {
+            if (DB_res.StatusCode == 0)
+            {
+                API_SuccessOrErrorOrInfo API_InfoRes = new API_SuccessOrErrorOrInfo()
+                {
+                    StatusCode = DB_res.StatusCode,
+                    Response = DB_res.Response
+                };
+                return Content(HttpStatusCode.OK, API_InfoRes);
+            }
+            else
+            {
+                API_SuccessOrErrorOrInfo API_SuccessRes = new API_SuccessOrErrorOrInfo()
+                {
+                    StatusCode = DB_res.StatusCode,
+                    Response = DB_res.Response
+                };
+                if (CUD == "Create")
+                {
+                    return Content(HttpStatusCode.Created, API_SuccessRes);
+                }
+                else
+                {
+                    return Ok(API_SuccessRes);
+                }
+
+            }
+        }
+        /// <summary>
+        /// this method is used to get error response
+        /// </summary>
+        /// <param name="Exception">Exception class as input parameter</param>
+        /// <returns></returns>
+        private IHttpActionResult GetErrorResponse(Exception Exception)
+        {
+            API_SuccessOrErrorOrInfo API_ErrorRes = new API_SuccessOrErrorOrInfo()
+            {
+                StatusCode = 0,
+                Response = Exception.Message.ToString(),
+            };
+            return Content(HttpStatusCode.InternalServerError, API_ErrorRes);
+        }
+
+        /// <summary>
+        /// this method is used to get responses for getmethods
+        /// </summary>
+        /// <typeparam name="T">dynamic type i.e string, int etc </typeparam>
+        /// <param name="list">pass the list of classes</param>
+        /// <param name="Message">if there is no records in list show message</param>
+        /// <returns></returns>
+        private IHttpActionResult GetSuccessOrFailureResForSelect<T>(dynamic list, string Message)
+        {
+            if (list.Count > 0)
+            {
+                API_Success<T> API_SuccessRes = new API_Success<T>()
+                {
+                    StatusCode = 1,
+                    Response = list
+                };
+                return Ok(API_SuccessRes);
+            }
+            else
+            {
+                API_SuccessOrErrorOrInfo API_InfoRes = new API_SuccessOrErrorOrInfo()
+                {
+                    StatusCode = 0,
+                    Response = Message,
+                };
+
+                return Content(HttpStatusCode.OK, API_InfoRes);
+            }
+        }
+
+        /// <summary>
+        /// this method is used to return JArray As Response
+        /// </summary>
+        /// <param name="JsonArray"></param>
+        /// <param name="Message"></param>
+        /// <returns></returns>
+        private IHttpActionResult GetSuccessOrFailureResForJArray(JArray JsonArray, string Message)
+        {
+            if (JsonArray.Count > 0)
+            {
+                API_JArraySuccess JArraySuccess = new API_JArraySuccess()
+                {
+                    StatusCode = 1,
+                    Response = JsonArray
+                };
+                return Ok(JArraySuccess);
+            }
+            else
+            {
+                API_SuccessOrErrorOrInfo API_InfoRes = new API_SuccessOrErrorOrInfo()
+                {
+                    StatusCode = 0,
+                    Response = Message,
+                };
+
+                return Content(HttpStatusCode.OK, API_InfoRes);
+            }
+        }
+
+    }
+}
